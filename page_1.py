@@ -11,7 +11,7 @@ def app():
     # Record Date-Time
     timezone = pytz.timezone("Europe/Amsterdam")
     date_time = st.date_input("Date", datetime.now(timezone))
-    time = st.time_input("Time", datetime.now(timezone).time())
+    time = st.time_input("Time", datetime.now(timezone).time()).replace(microsecond=0)
     date_time = datetime.combine(date_time, time)
 
     # Record Activity
@@ -47,6 +47,5 @@ def store_data_csv(date_time: datetime, activity: str, amount: int) -> pd.DataFr
         "Amount Consumed": [amount if amount > 0 else None],
     }
     df = pd.DataFrame(data)
-    df["Date-Time"] = pd.to_datetime(format="%Y-%m-%d %H:%M:%S")
     df.to_csv(f"data/{formatted_date_time}.csv", index=False)
     return df
