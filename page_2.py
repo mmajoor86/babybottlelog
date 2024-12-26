@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import os
-from datetime import datetime
 
 
 def app():
@@ -83,4 +82,5 @@ def read_files(datadir: str = "data") -> pd.DataFrame:
     # Convert 'Date-Time' column to datetime
     df["Date-Time"] = pd.to_datetime(df["Date-Time"], format="%Y-%m-%d %H:%M:%S")
     df["Date"] = df["Date-Time"].dt.date
+    df = df.sort_values(by="Date-Time", ascending=False).reset_index(drop=True)
     return df
