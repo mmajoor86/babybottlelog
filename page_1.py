@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import pytz
 from datetime import datetime
 
 
@@ -8,7 +9,8 @@ def app():
     st.markdown("### Log feedings and diaper changes for baby Jessie! 🌸👶")
 
     # Record Date-Time
-    date_time = st.date_input("Date", datetime.now())
+    timezone = pytz.timezone('Europe/Amsterdam')
+    date_time = st.date_input("Date", datetime.now(timezone))
     time = st.time_input("Time")
     date_time = datetime.combine(date_time, time)
 
