@@ -8,11 +8,15 @@ def app():
     st.title("🍼 Baby Jessie’s Bottle Logger")
     st.markdown("### Log feedings and diaper changes for baby Jessie! 🌸👶")
 
-    # Record Date-Time
+    # Define the timezone for Amsterdam
     timezone = pytz.timezone("Europe/Amsterdam")
-    date_time = st.date_input("Date", datetime.now(timezone))
-    time = st.time_input("Time", datetime.now(timezone).time()).replace(microsecond=0)
-    date_time = datetime.combine(date_time, time)
+    # Get the current date and time in the Amsterdam timezone and remove microseconds
+    current_time_amsterdam = datetime.now(timezone).replace(microsecond=0)
+    # Record Date and Time
+    date = st.date_input("📅 Date", current_time_amsterdam.date())
+    time = st.time_input("⏰ Time", value=current_time_amsterdam)
+    date_time = datetime.combine(date, time)
+    st.write(date_time)
 
     # Record Activity
     activity = st.selectbox("Activity", ["🍼 Drink", "👶 Diaper"])
