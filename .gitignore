@@ -172,3 +172,8 @@ cython_debug/
 
 #pw
 .streamlit/secrets.toml
+
+#ignore
+.DS_Store
+.ruff_cache
+.devcontainer
