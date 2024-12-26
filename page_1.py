@@ -11,7 +11,7 @@ def app():
     # Record Date-Time
     timezone = pytz.timezone('Europe/Amsterdam')
     date_time = st.date_input("Date", datetime.now(timezone))
-    time = st.time_input("Time")
+    time = st.time_input("Time",datetime.now(timezone).time())
     date_time = datetime.combine(date_time, time)
 
     # Record Activity
