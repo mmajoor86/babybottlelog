@@ -19,7 +19,7 @@ def app():
     st.write(date_time)
 
     # Record Activity
-    activity = st.selectbox("Activity", ["🍼 Drink", "👶 Diaper"])
+    activity = st.selectbox("Activity", ["🍼 Drink", "👶 Diaper", "💩 Poopy Diaper"])
 
     # Record Amount (optional)
     amount = st.number_input(
