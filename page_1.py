@@ -16,7 +16,6 @@ def app():
     date = st.date_input("📅 Date", current_time_amsterdam.date())
     time = st.time_input("⏰ Time", value=current_time_amsterdam)
     date_time = datetime.combine(date, time)
-    st.write(date_time)
 
     # Record Activity
     activity = st.selectbox("Activity", ["🍼 Drink", "👶 Diaper", "💩 Poopy Diaper"])
