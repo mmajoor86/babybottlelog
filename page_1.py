@@ -5,7 +5,6 @@ from datetime import datetime
 
 
 def app():
-    st.title("🍼 Baby Jessie’s Bottle Logger")
     st.markdown("### Log feedings and diaper changes for baby Jessie! 🌸👶")
 
     # Define the timezone for Amsterdam
