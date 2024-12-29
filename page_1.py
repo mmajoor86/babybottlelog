@@ -42,13 +42,18 @@ def app():
 
 
 def store_data_csv(date_time: datetime, activity: str, amount: int) -> pd.DataFrame:
-    formatted_date_time = date_time.strftime("%Y-%m-%d_%H-%M-%S")
-    """Store the input data as a csv file"""
+    """Append the data to the history csv file."""
+    df_hist = pd.read_csv("data/history.csv")
+    df_hist["Date-Time"] = pd.to_datetime(
+        df_hist["Date-Time"], format="%Y-%m-%d %H:%M:%S"
+    )
     data = {
         "Date-Time": [date_time],
         "Activity": [activity],
         "Amount Consumed": [amount if amount > 0 else None],
     }
-    df = pd.DataFrame(data)
-    df.to_csv(f"data/{formatted_date_time}.csv", index=False)
+    df = pd.concat([df_hist, pd.DataFrame(data)]).sort_values(
+        by="Date-Time", ascending=False
+    )
+    df.to_csv("data/history.csv", index=False)
     return df

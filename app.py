@@ -1,5 +1,6 @@
 import hmac
 import streamlit as st
+import page_0
 import page_1
 import page_2
 
@@ -31,9 +32,14 @@ def check_password():
 if not check_password():
     st.stop()  # Do not continue if check_password is not True.
 
-# Add a sidebar with options to navigate between pages
+# Sidebar with options to navigate between pages
+st.title("🍼 Baby Jessie’s Bottle Logger")
 st.sidebar.title("🚀 Navigation")
-selection = st.sidebar.radio("👶 Go to", ["🍼 Data Entry", "📊 Overview"])
+selection = st.sidebar.radio(
+    label="Select Page",
+    label_visibility="hidden",
+    options=["🍼 Data Entry", "📊 Overview", "⚙️ Admin"],
+)
 
 
 # Depending on the selection, call the relevant page
@@ -41,3 +47,5 @@ if selection == "🍼 Data Entry":
     page_1.app()
 elif selection == "📊 Overview":
     page_2.app()
+elif selection == "⚙️ Admin":
+    page_0.app()
