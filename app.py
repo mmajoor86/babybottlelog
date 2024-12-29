@@ -38,7 +38,7 @@ st.sidebar.title("🚀 Navigation")
 selection = st.sidebar.radio(
     label="Select Page",
     label_visibility="hidden",
-    options=["⚙️ Admin", "🍼 Data Entry", "📊 Overview"],
+    options=["🍼 Data Entry", "📊 Overview", "⚙️ Admin"],
 )
 
 
@@ -47,5 +47,5 @@ if selection == "🍼 Data Entry":
     page_1.app()
 elif selection == "📊 Overview":
     page_2.app()
-elif selection == "⚙️ Settings":
+elif selection == "⚙️ Admin":
     page_0.app()

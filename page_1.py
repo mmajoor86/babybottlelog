@@ -5,6 +5,7 @@ from datetime import datetime
 
 
 def app():
+    st.title("🍼 Baby Jessie’s Bottle Logger")
     st.markdown("### Log feedings and diaper changes for baby Jessie! 🌸👶")
 
     # Define the timezone for Amsterdam
@@ -43,6 +44,9 @@ def app():
 def store_data_csv(date_time: datetime, activity: str, amount: int) -> pd.DataFrame:
     """Append the data to the history csv file."""
     df_hist = pd.read_csv("data/history.csv")
+    df_hist["Date-Time"] = pd.to_datetime(
+        df_hist["Date-Time"], format="%Y-%m-%d %H:%M:%S"
+    )
     data = {
         "Date-Time": [date_time],
         "Activity": [activity],
