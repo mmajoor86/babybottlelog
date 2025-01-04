@@ -23,7 +23,7 @@ def app():
         ["🍼 Drink", "👶 Diaper", "💩 Poopy Diaper", "⚖️ Weight", "📏 Length"],
     )
     amount = np.nan
-    weigth = np.nan
+    weight = np.nan
     length = np.nan
     # Record Amount (optional)
     if activity == "🍼 Drink":
