@@ -33,9 +33,11 @@ def app():
 
     st.subheader("🍼 Activity Over Time")
     # Plot Activity Count Over Time by Activity
-    fig_activity, fig_amount = create_daily_plots(df_filtered, daily_target)
+    fig_weight, fig_length, fig_activity, fig_amount = create_daily_plots(df_filtered, daily_target)
     st.plotly_chart(fig_activity)
     st.plotly_chart(fig_amount)
+    st.plotly_chart(fig_weight)
+    st.plotly_chart(fig_length)
     st.write("### Raw Data 📋")
     st.dataframe(df)
 
@@ -78,9 +80,50 @@ def load_target():
 
 def create_daily_plots(df_filtered, daily_target):
     """Generate daily plots for activity counts and consumption"""
+
+    # DF without weight and length
+    df_filtered_1 = df_filtered[
+        ~df_filtered["Activity"].isin(["⚖️ Weight", "📏 Length"])
+    ]
+
+    # DF weight
+    df_weight = df_filtered[
+        df_filtered["Activity"].isin(["⚖️ Weight"])
+    ]
+
+    # DF length
+    df_length = df_filtered[
+        df_filtered["Activity"].isin(["📏 Length"])
+    ]
+
     activity_count = (
-        df_filtered.groupby(["Date", "Activity"]).size().reset_index(name="Count")
+        df_filtered_1.groupby(["Date", "Activity"]).size().reset_index(name="Count")
     )
+
+    fig_weight = px.line(
+        df_weight,
+        x="Date",
+        y="Weight",
+        color="Activity",
+        markers=True,
+        title="Weight In kg Over Time",
+        labels={"Date": "Date", "Weight": "Weight"},
+    )
+
+    fig_weight.update_layout(xaxis_tickformat="%Y-%m-%d")
+
+    fig_length = px.line(
+        df_length,
+        x="Date",
+        y="Length",
+        color="Activity",
+        markers=True,
+        title="Length in cm Over Time",
+        labels={"Date": "Date", "Length": "Length"},
+    )
+
+    fig_length.update_layout(xaxis_tickformat="%Y-%m-%d")
+
     fig_activity = px.line(
         activity_count,
         x="Date",
@@ -90,8 +133,11 @@ def create_daily_plots(df_filtered, daily_target):
         title="Activity Count Over Time",
         labels={"Date": "Date", "Count": "Activity Count"},
     )
+
     fig_activity.update_layout(xaxis_tickformat="%Y-%m-%d")
-    amount_consumed = df_filtered.groupby("Date")["Amount Consumed"].sum().reset_index()
+    amount_consumed = (
+        df_filtered_1.groupby("Date")["Amount Consumed"].sum().reset_index()
+    )
     fig_amount = px.bar(
         amount_consumed,
         x="Date",
@@ -101,8 +147,8 @@ def create_daily_plots(df_filtered, daily_target):
     fig_amount.update_layout(xaxis_tickformat="%Y-%m-%d")
     fig_amount.add_shape(
         type="line",
-        x0=df_filtered["Date"].min(),
-        x1=df_filtered["Date"].max(),
+        x0=df_filtered_1["Date"].min(),
+        x1=df_filtered_1["Date"].max(),
         y0=daily_target,
         y1=daily_target,
         line=dict(color="Red", width=3, dash="dash"),
@@ -114,4 +160,4 @@ def create_daily_plots(df_filtered, daily_target):
         showarrow=False,
         yshift=10,
     )
-    return fig_activity, fig_amount
+    return fig_weight, fig_length, fig_activity, fig_amount

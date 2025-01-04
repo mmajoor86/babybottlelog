@@ -2,7 +2,7 @@
 name = "babybottlelog"
 version = "0.1.0"
 description = ""
-authors = ["Maarten"]
+authors = ["Maarten", "Ling"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
