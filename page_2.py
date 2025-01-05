@@ -1,6 +1,7 @@
 import json
 import os
 from datetime import datetime, timedelta
+from dateutil import relativedelta
 
 import pandas as pd
 import plotly.express as px
@@ -8,13 +9,16 @@ import pytz
 import streamlit as st
 
 TARGET_FILE = r"data/daily_target.json"
+DOB_FILE = r"data/dob.json"
 
 
 def app():
     st.markdown("### 📊 Jessie Analytics 🌸👶")
     df = read_files()
     daily_target = load_target()
-
+    dob = load_dob()
+    bday_message = generate_bday_message(dob)
+    st.write(bday_message)
     # Date range filter
     timezone = pytz.timezone("Europe/Amsterdam")
     start_date = st.date_input(
@@ -82,6 +86,37 @@ def load_target():
                 "daily_milk_target", 600
             )  # Default to 600 if not set
     return 600
+
+
+def load_dob():
+    with open(DOB_FILE, "r") as file:
+        return json.load(file).get("date_of_birth")
+
+
+def generate_bday_message(dob: str) -> str:
+    timezone = pytz.timezone("Europe/Amsterdam")
+    dob = pd.to_datetime(dob, format="%d-%m-%Y").date()
+    today = datetime.now(timezone).date()
+    r = relativedelta.relativedelta(today, dob)
+    ndays = (today - dob).days
+
+    # check if X full years have passed
+    year_cond = dob.month == today.month and dob.day == today.day
+    calmonth_cond = dob.day == today.day
+    if year_cond:
+        message = f"🎂HURRAY🎂 Jessie is {today.year-dob.year} year old today 🎁🎁"
+    elif calmonth_cond:
+        months_difference = (r.years * 12) + r.months
+        message = (
+            f"🎈HURRAY🎈 Jessie is {months_difference} calender months old today 🎉"
+        )
+    elif ndays % 28 == 0:
+        message = f"🎈HURRAY🎈 Jessie is {ndays/28} months old today 🎉"
+    elif ndays % 7 == 0:
+        message = f"🎈HURRAY🎈 Jessie is {ndays/7} weeks old today 🥳"
+    else:
+        message = f"🎈HURRAY🎈 Jessie is {ndays} days old today"
+    return message
 
 
 def create_daily_plots(df_filtered: pd.DataFrame, daily_target: int):
