@@ -83,7 +83,7 @@ def create_daily_plots(df_filtered: pd.DataFrame, daily_target: int):
     """Generate daily plots for activity counts and consumption"""
 
     # DF without weight and length
-    df_filtered_1 = df_filtered[
+    df_activities = df_filtered[
         ~df_filtered["Activity"].isin(["⚖️ Weight", "📏 Length"])
     ]
 
@@ -94,7 +94,7 @@ def create_daily_plots(df_filtered: pd.DataFrame, daily_target: int):
     df_length = df_filtered[df_filtered["Activity"].isin(["📏 Length"])]
 
     activity_count = (
-        df_filtered_1.groupby(["Date", "Activity"]).size().reset_index(name="Count")
+        df_activities.groupby(["Date", "Activity"]).size().reset_index(name="Count")
     )
 
     fig_weight = px.line(
@@ -133,7 +133,7 @@ def create_daily_plots(df_filtered: pd.DataFrame, daily_target: int):
 
     fig_activity.update_layout(xaxis_tickformat="%Y-%m-%d")
     amount_consumed = (
-        df_filtered_1.groupby("Date")["Amount Consumed"].sum().reset_index()
+        df_activities.groupby("Date")["Amount Consumed"].sum().reset_index()
     )
     fig_amount = px.bar(
         amount_consumed,
@@ -144,8 +144,8 @@ def create_daily_plots(df_filtered: pd.DataFrame, daily_target: int):
     fig_amount.update_layout(xaxis_tickformat="%Y-%m-%d")
     fig_amount.add_shape(
         type="line",
-        x0=df_filtered_1["Date"].min(),
-        x1=df_filtered_1["Date"].max(),
+        x0=df_activities["Date"].min(),
+        x1=df_activities["Date"].max(),
         y0=daily_target,
         y1=daily_target,
         line=dict(color="Red", width=3, dash="dash"),
