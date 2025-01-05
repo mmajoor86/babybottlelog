@@ -43,7 +43,7 @@ def app():
 
     # Record Length (optional)
     if activity == "📏 Length":
-        length = st.number_input("Length (cm)", step=1, format="%d")
+        length = st.number_input("Length (cm)", step=0.1, format="%.2f")
 
     # Submit button
     if st.button("Submit"):
@@ -53,7 +53,7 @@ def app():
             f"Amount Consumed: {amount} ml" if amount > 0 else "Amount Consumed: N/A"
         )
         st.write(f"Weight: {weight} kg" if weight > 0 else "Weight: N/A")
-        st.write(f"Length: {length} kg" if length > 0 else "Length: N/A")
+        st.write(f"Length: {length} cm" if length > 0 else "Length: N/A")
         store_data_csv(date_time, activity, amount, weight, length)
         st.markdown("### Updated Data 📊")
 

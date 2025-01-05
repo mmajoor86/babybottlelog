@@ -3,8 +3,8 @@ import json
 import pandas as pd
 import streamlit as st
 
-from constants import TARGET_FILE
-from page_2 import load_target
+from constants import TARGET_FILE, RECOMMENDATION_FILE
+from page_2 import load_target, load_recommended_amount_ml_per_kg
 
 
 def save_target(target):
@@ -12,11 +12,19 @@ def save_target(target):
         json.dump({"daily_milk_target": target}, file)
 
 
+def save_target_recommended_amount(target):
+    with open(RECOMMENDATION_FILE, "w") as file:
+        json.dump({"recommended_amount_ml_per_kg": target}, file)
+
+
 def app():
     st.markdown("### 🚀 Admin Centre")
 
     # Load the current target
     current_target = load_target()
+
+    # Load recommended amount ml per kg
+    recommended_amount_ml_per_kg = load_recommended_amount_ml_per_kg()
 
     # Input for Daily Milk Target
     daily_target = st.number_input(
@@ -30,6 +38,27 @@ def app():
         st.rerun()  # Reload
     # Display the current target
     st.write(f"Current Daily Milk Target: {daily_target} ml")
+
+    # Input for recommended amount of milk in ml per kg
+    recommended_amount_per_kg = st.number_input(
+        label="Recommended amount of milk per kg (ml)",
+        min_value=100,
+        step=50,
+        value=recommended_amount_ml_per_kg,
+    )
+
+    # Button to confirm the change
+    if st.button("Set Recommended amount of milk per kg (ml)"):
+        save_target_recommended_amount(recommended_amount_per_kg)
+        st.success(
+            f"Recommended amount of milk per kg (ml) set to: {recommended_amount_per_kg} ml"
+        )
+        st.rerun()  # Reload
+
+    # Display the current target
+    st.write(
+        f"Current recommended amount of milk per kg: {recommended_amount_per_kg} ml"
+    )
 
     # Path to the data file
     data_file = "data/history.csv"

@@ -1,19 +1,20 @@
 import json
 from datetime import datetime, timedelta
 
+import numpy as np
 import pandas as pd
 import plotly.express as px
 import pytz
 import streamlit as st
 from dateutil import relativedelta
 
-from constants import DOB_FILE, TARGET_FILE
+from constants import DOB_FILE, TARGET_FILE, RECOMMENDATION_FILE
 
 
 def app():
     st.markdown("### 📊 Jessie Analytics 🌸👶")
     df = read_files()
-    daily_target = load_target()
+
     dob = load_dob()
     bday_message = generate_bday_message(dob)
     st.write(bday_message)
@@ -30,6 +31,8 @@ def app():
     # Filter data based on the selected date range
     mask = (df["Date"] >= start_date) & (df["Date"] <= end_date)
     df_filtered = df.loc[mask]
+
+    daily_target = calculate_daily_target(df_filtered)
 
     st.subheader("Most recent activities")
     last_events = (
@@ -53,6 +56,22 @@ def app():
     st.dataframe(df)
 
 
+# Calculate daily_target
+def calculate_daily_target(df_filtered):
+    df_weight = (
+        df_filtered[df_filtered["Activity"] == "⚖️ Weight"]
+        .sort_values(by="Date-Time", ascending=False)
+        .reset_index(drop=True)
+    )
+    last_weight = df_weight["Weight"][0]
+    recommended_amount_ml_per_kg = load_recommended_amount_ml_per_kg()
+    if (last_weight != 0 and last_weight is not np.nan) and recommended_amount_ml_per_kg != 0:
+        daily_target = last_weight * recommended_amount_ml_per_kg
+    else:
+        daily_target = load_target()
+    return daily_target
+
+
 def read_files(datadir: str = "data") -> pd.DataFrame:
     """Ingest History CSV File"""
     df = pd.read_csv(f"{datadir}/history.csv")
@@ -66,6 +85,11 @@ def read_files(datadir: str = "data") -> pd.DataFrame:
 def load_target() -> int:
     with open(TARGET_FILE, "r") as file:
         return json.load(file).get("daily_milk_target")
+
+
+def load_recommended_amount_ml_per_kg() -> int:
+    with open(RECOMMENDATION_FILE, "r") as file:
+        return json.load(file).get("recommended_amount_ml_per_kg")
 
 
 def load_dob() -> str:
@@ -135,7 +159,7 @@ def create_daily_plots(df_filtered: pd.DataFrame, daily_target: int):
         y="Length",
         color="Activity",
         markers=True,
-        title="Length in cm Over Time",
+        title="Length In cm Over Time",
         labels={"Date": "Date", "Length": "Length"},
     )
 
