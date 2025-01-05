@@ -8,7 +8,7 @@ import pytz
 import streamlit as st
 from dateutil import relativedelta
 
-from constants import DOB_FILE, TARGET_FILE, RECOMMENDATION_FILE
+from constants import DOB_FILE, RECOMMENDATION_FILE, TARGET_FILE
 
 
 def app():
@@ -62,10 +62,12 @@ def calculate_daily_target(df_filtered):
         df_filtered[df_filtered["Activity"] == "⚖️ Weight"]
         .sort_values(by="Date-Time", ascending=False)
         .reset_index(drop=True)
-    )
+    ).dropna(subset="Weight")
     last_weight = df_weight["Weight"][0]
     recommended_amount_ml_per_kg = load_recommended_amount_ml_per_kg()
-    if (last_weight != 0 and last_weight is not np.nan) and recommended_amount_ml_per_kg != 0:
+    if (
+        last_weight != 0 and last_weight is not np.nan
+    ) and recommended_amount_ml_per_kg != 0:
         daily_target = last_weight * recommended_amount_ml_per_kg
     else:
         daily_target = load_target()
@@ -142,7 +144,7 @@ def create_daily_plots(df_filtered: pd.DataFrame, daily_target: int):
     )
 
     fig_weight = px.line(
-        df_weight,
+        df_weight.dropna(subset="Weight"),
         x="Date",
         y="Weight",
         color="Activity",
@@ -154,7 +156,7 @@ def create_daily_plots(df_filtered: pd.DataFrame, daily_target: int):
     fig_weight.update_layout(xaxis_tickformat="%Y-%m-%d")
 
     fig_length = px.line(
-        df_length,
+        df_length.dropna(subset="Length"),
         x="Date",
         y="Length",
         color="Activity",
