@@ -5,7 +5,7 @@ import pandas as pd
 import streamlit as st
 
 # Path to the JSON file to store the daily milk target
-TARGET_FILE = "daily_target.json"
+TARGET_FILE = r"data/daily_target.json"
 
 
 def load_target():
