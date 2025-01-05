@@ -56,22 +56,8 @@ def app():
 
 
 def read_files(datadir: str = "data") -> pd.DataFrame:
-    """Read log files and collect in a dataframe"""
-    # Check if any CSV files exist
-    csv_files = [f for f in os.listdir("data") if f.endswith(".csv")]
-
-    if len(csv_files) == 0:
-        st.write(
-            "No data available yet. Please log some activities in the Data Entry page. 🍼👶"
-        )
-
-    # Combine all CSV files into a single DataFrame
-    df_list = []
-    for file in csv_files:
-        df = pd.read_csv(f"{datadir}/{file}")
-        df_list.append(df)
-
-    df = pd.concat(df_list, ignore_index=True)
+    """Ingest History CSV File"""
+    df = pd.read_csv(f"{datadir}/history.csv")
     # Convert 'Date-Time' column to datetime
     df["Date-Time"] = pd.to_datetime(df["Date-Time"], format="%Y-%m-%d %H:%M:%S")
     df["Date"] = df["Date-Time"].dt.date
@@ -79,7 +65,7 @@ def read_files(datadir: str = "data") -> pd.DataFrame:
     return df
 
 
-def load_target():
+def load_target()->int:
     if os.path.exists(TARGET_FILE):
         with open(TARGET_FILE, "r") as file:
             return json.load(file).get(
@@ -88,7 +74,7 @@ def load_target():
     return 600
 
 
-def load_dob():
+def load_dob()->str:
     with open(DOB_FILE, "r") as file:
         return json.load(file).get("date_of_birth")
 
