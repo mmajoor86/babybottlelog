@@ -79,7 +79,7 @@ def load_target():
     return 600
 
 
-def create_daily_plots(df_filtered, daily_target):
+def create_daily_plots(df_filtered: pd.DataFrame, daily_target: int):
     """Generate daily plots for activity counts and consumption"""
 
     # DF without weight and length
