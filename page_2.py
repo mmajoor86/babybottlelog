@@ -1,15 +1,13 @@
 import json
-import os
 from datetime import datetime, timedelta
-from dateutil import relativedelta
 
 import pandas as pd
 import plotly.express as px
 import pytz
 import streamlit as st
+from dateutil import relativedelta
 
-TARGET_FILE = r"data/daily_target.json"
-DOB_FILE = r"data/dob.json"
+from constants import DOB_FILE, TARGET_FILE
 
 
 def app():
@@ -65,16 +63,12 @@ def read_files(datadir: str = "data") -> pd.DataFrame:
     return df
 
 
-def load_target()->int:
-    if os.path.exists(TARGET_FILE):
-        with open(TARGET_FILE, "r") as file:
-            return json.load(file).get(
-                "daily_milk_target", 600
-            )  # Default to 600 if not set
-    return 600
+def load_target() -> int:
+    with open(TARGET_FILE, "r") as file:
+        return json.load(file).get("daily_milk_target")
 
 
-def load_dob()->str:
+def load_dob() -> str:
     with open(DOB_FILE, "r") as file:
         return json.load(file).get("date_of_birth")
 
