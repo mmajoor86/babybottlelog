@@ -1,20 +1,10 @@
 import json
-import os
 
 import pandas as pd
 import streamlit as st
 
-# Path to the JSON file to store the daily milk target
-TARGET_FILE = r"data/daily_target.json"
-
-
-def load_target():
-    if os.path.exists(TARGET_FILE):
-        with open(TARGET_FILE, "r") as file:
-            return json.load(file).get(
-                "daily_milk_target", 600
-            )  # Default to 600 if not set
-    return 600
+from constants import TARGET_FILE
+from page_2 import load_target
 
 
 def save_target(target):
