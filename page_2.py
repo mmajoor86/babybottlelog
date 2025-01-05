@@ -1,10 +1,11 @@
-from datetime import datetime, timedelta
+import json
 import os
+from datetime import datetime, timedelta
+
 import pandas as pd
 import plotly.express as px
 import pytz
 import streamlit as st
-import json
 
 TARGET_FILE = "daily_target.json"
 
