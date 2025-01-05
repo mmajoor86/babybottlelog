@@ -7,7 +7,7 @@ import plotly.express as px
 import pytz
 import streamlit as st
 
-TARGET_FILE = "daily_target.json"
+TARGET_FILE = r"data/daily_target.json"
 
 
 def app():
@@ -30,7 +30,12 @@ def app():
     df_filtered = df.loc[mask]
 
     st.subheader("Most recent activities")
-    last_events = df_filtered.sort_values(by="Date-Time").groupby("Activity").tail(1)
+    last_events = (
+        df_filtered.sort_values(by="Date-Time")
+        .groupby("Activity")
+        .tail(1)
+        .drop("Date", axis=1)
+    )
     st.dataframe(last_events)
 
     st.subheader("🍼 Activity Over Time")
