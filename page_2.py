@@ -24,7 +24,8 @@ def app():
 
     if start_date > end_date:
         st.error("Error: End date must fall after start date.")
-        return  # Filter data based on the selected date range
+        return
+    # Filter data based on the selected date range
     mask = (df["Date"] >= start_date) & (df["Date"] <= end_date)
     df_filtered = df.loc[mask]
 
@@ -33,7 +34,7 @@ def app():
     st.dataframe(last_events)
 
     st.subheader("🍼 Activity Over Time")
-    # Plot Activity Count Over Time by Activity
+    # Generate Plots
     fig_weight, fig_length, fig_activity, fig_amount = create_daily_plots(
         df_filtered, daily_target
     )
@@ -54,9 +55,6 @@ def read_files(datadir: str = "data") -> pd.DataFrame:
         st.write(
             "No data available yet. Please log some activities in the Data Entry page. 🍼👶"
         )
-
-    else:
-        st.write(f"Found {len(csv_files)} log files")
 
     # Combine all CSV files into a single DataFrame
     df_list = []
