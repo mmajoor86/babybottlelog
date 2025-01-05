@@ -33,7 +33,9 @@ def app():
 
     st.subheader("🍼 Activity Over Time")
     # Plot Activity Count Over Time by Activity
-    fig_weight, fig_length, fig_activity, fig_amount = create_daily_plots(df_filtered, daily_target)
+    fig_weight, fig_length, fig_activity, fig_amount = create_daily_plots(
+        df_filtered, daily_target
+    )
     st.plotly_chart(fig_activity)
     st.plotly_chart(fig_amount)
     st.plotly_chart(fig_weight)
@@ -87,14 +89,10 @@ def create_daily_plots(df_filtered, daily_target):
     ]
 
     # DF weight
-    df_weight = df_filtered[
-        df_filtered["Activity"].isin(["⚖️ Weight"])
-    ]
+    df_weight = df_filtered[df_filtered["Activity"].isin(["⚖️ Weight"])]
 
     # DF length
-    df_length = df_filtered[
-        df_filtered["Activity"].isin(["📏 Length"])
-    ]
+    df_length = df_filtered[df_filtered["Activity"].isin(["📏 Length"])]
 
     activity_count = (
         df_filtered_1.groupby(["Date", "Activity"]).size().reset_index(name="Count")
