@@ -1,19 +1,22 @@
+import json
 from datetime import datetime, timedelta
-import os
+
 import pandas as pd
 import plotly.express as px
 import pytz
 import streamlit as st
-import json
+from dateutil import relativedelta
 
-TARGET_FILE = "daily_target.json"
+from constants import DOB_FILE, TARGET_FILE
 
 
 def app():
     st.markdown("### 📊 Jessie Analytics 🌸👶")
     df = read_files()
     daily_target = load_target()
-
+    dob = load_dob()
+    bday_message = generate_bday_message(dob)
+    st.write(bday_message)
     # Date range filter
     timezone = pytz.timezone("Europe/Amsterdam")
     start_date = st.date_input(
@@ -23,17 +26,25 @@ def app():
 
     if start_date > end_date:
         st.error("Error: End date must fall after start date.")
-        return  # Filter data based on the selected date range
+        return
+    # Filter data based on the selected date range
     mask = (df["Date"] >= start_date) & (df["Date"] <= end_date)
     df_filtered = df.loc[mask]
 
     st.subheader("Most recent activities")
-    last_events = df_filtered.sort_values(by="Date-Time").groupby("Activity").tail(1)
+    last_events = (
+        df_filtered.sort_values(by="Date-Time")
+        .groupby("Activity")
+        .tail(1)
+        .drop("Date", axis=1)
+    )
     st.dataframe(last_events)
 
     st.subheader("🍼 Activity Over Time")
-    # Plot Activity Count Over Time by Activity
-    fig_weight, fig_length, fig_activity, fig_amount = create_daily_plots(df_filtered, daily_target)
+    # Generate Plots
+    fig_weight, fig_length, fig_activity, fig_amount = create_daily_plots(
+        df_filtered, daily_target
+    )
     st.plotly_chart(fig_activity)
     st.plotly_chart(fig_amount)
     st.plotly_chart(fig_weight)
@@ -43,25 +54,8 @@ def app():
 
 
 def read_files(datadir: str = "data") -> pd.DataFrame:
-    """Read log files and collect in a dataframe"""
-    # Check if any CSV files exist
-    csv_files = [f for f in os.listdir("data") if f.endswith(".csv")]
-
-    if len(csv_files) == 0:
-        st.write(
-            "No data available yet. Please log some activities in the Data Entry page. 🍼👶"
-        )
-
-    else:
-        st.write(f"Found {len(csv_files)} log files")
-
-    # Combine all CSV files into a single DataFrame
-    df_list = []
-    for file in csv_files:
-        df = pd.read_csv(f"{datadir}/{file}")
-        df_list.append(df)
-
-    df = pd.concat(df_list, ignore_index=True)
+    """Ingest History CSV File"""
+    df = pd.read_csv(f"{datadir}/history.csv")
     # Convert 'Date-Time' column to datetime
     df["Date-Time"] = pd.to_datetime(df["Date-Time"], format="%Y-%m-%d %H:%M:%S")
     df["Date"] = df["Date-Time"].dt.date
@@ -69,35 +63,58 @@ def read_files(datadir: str = "data") -> pd.DataFrame:
     return df
 
 
-def load_target():
-    if os.path.exists(TARGET_FILE):
-        with open(TARGET_FILE, "r") as file:
-            return json.load(file).get(
-                "daily_milk_target", 600
-            )  # Default to 600 if not set
-    return 600
+def load_target() -> int:
+    with open(TARGET_FILE, "r") as file:
+        return json.load(file).get("daily_milk_target")
 
 
-def create_daily_plots(df_filtered, daily_target):
+def load_dob() -> str:
+    with open(DOB_FILE, "r") as file:
+        return json.load(file).get("date_of_birth")
+
+
+def generate_bday_message(dob: str) -> str:
+    timezone = pytz.timezone("Europe/Amsterdam")
+    dob = pd.to_datetime(dob, format="%d-%m-%Y").date()
+    today = datetime.now(timezone).date()
+    r = relativedelta.relativedelta(today, dob)
+    ndays = (today - dob).days
+
+    # check if X full years have passed
+    year_cond = dob.month == today.month and dob.day == today.day
+    calmonth_cond = dob.day == today.day
+    if year_cond:
+        message = f"🎂HURRAY🎂 Jessie is {today.year-dob.year} year old today 🎁🎁"
+    elif calmonth_cond:
+        months_difference = (r.years * 12) + r.months
+        message = (
+            f"🎈HURRAY🎈 Jessie is {months_difference} calender months old today 🎉"
+        )
+    elif ndays % 28 == 0:
+        message = f"🎈HURRAY🎈 Jessie is {ndays/28} months old today 🎉"
+    elif ndays % 7 == 0:
+        message = f"🎈HURRAY🎈 Jessie is {ndays/7} weeks old today 🥳"
+    else:
+        message = f"🎈HURRAY🎈 Jessie is {ndays} days old today"
+    return message
+
+
+def create_daily_plots(df_filtered: pd.DataFrame, daily_target: int):
     """Generate daily plots for activity counts and consumption"""
 
     # DF without weight and length
-    df_filtered_1 = df_filtered[
+    df_activities = df_filtered[
         ~df_filtered["Activity"].isin(["⚖️ Weight", "📏 Length"])
     ]
 
     # DF weight
-    df_weight = df_filtered[
-        df_filtered["Activity"].isin(["⚖️ Weight"])
-    ]
+    df_weight = df_filtered[df_filtered["Activity"].isin(["⚖️ Weight"])]
 
     # DF length
-    df_length = df_filtered[
-        df_filtered["Activity"].isin(["📏 Length"])
-    ]
+    df_length = df_filtered[df_filtered["Activity"].isin(["📏 Length"])]
 
     activity_count = (
-        df_filtered_1.groupby(["Date", "Activity"]).size().reset_index(name="Count")
+        df_activities.groupby(["Date", "Activity"]).size().reset_index(name="Count")
     )
 
     fig_weight = px.line(
@@ -136,7 +153,7 @@ def create_daily_plots(df_filtered, daily_target):
 
     fig_activity.update_layout(xaxis_tickformat="%Y-%m-%d")
     amount_consumed = (
-        df_filtered_1.groupby("Date")["Amount Consumed"].sum().reset_index()
+        df_activities.groupby("Date")["Amount Consumed"].sum().reset_index()
     )
     fig_amount = px.bar(
         amount_consumed,
@@ -147,8 +164,8 @@ def create_daily_plots(df_filtered, daily_target):
     fig_amount.update_layout(xaxis_tickformat="%Y-%m-%d")
     fig_amount.add_shape(
         type="line",
-        x0=df_filtered_1["Date"].min(),
-        x1=df_filtered_1["Date"].max(),
+        x0=df_activities["Date"].min(),
+        x1=df_activities["Date"].max(),
         y0=daily_target,
         y1=daily_target,
         line=dict(color="Red", width=3, dash="dash"),

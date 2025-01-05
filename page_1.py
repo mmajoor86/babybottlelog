@@ -1,8 +1,9 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-import pytz
 from datetime import datetime
+
+import numpy as np
+import pandas as pd
+import pytz
+import streamlit as st
 
 
 def app():
