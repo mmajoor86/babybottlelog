@@ -1,10 +1,9 @@
 import json
 
-import pandas as pd
 import streamlit as st
 
-from constants import TARGET_FILE
-from page_2 import load_target
+from utils import (TARGET_FILE, download_file_from_blob, load_target,
+                   upload_dataframe_to_blob)
 
 
 def save_target(target):
@@ -31,15 +30,13 @@ def app():
     # Display the current target
     st.write(f"Current Daily Milk Target: {daily_target} ml")
 
-    # Path to the data file
-    data_file = "data/history.csv"
     # Load the data
-    df = pd.read_csv(data_file)
+    df = download_file_from_blob()
 
     # Display the data editor s
     st.markdown("### Data Editor")
     edited_df = st.data_editor(df, num_rows="dynamic")
     # Save button
     if st.button("Save Changes"):
-        edited_df.to_csv(data_file, index=False)
+        upload_dataframe_to_blob(edited_df)
         st.success("Changes saved successfully!")

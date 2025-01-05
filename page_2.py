@@ -1,4 +1,3 @@
-import json
 from datetime import datetime, timedelta
 
 import pandas as pd
@@ -7,7 +6,7 @@ import pytz
 import streamlit as st
 from dateutil import relativedelta
 
-from constants import DOB_FILE, TARGET_FILE
+from utils import download_file_from_blob, load_dob, load_target
 
 
 def app():
@@ -53,24 +52,14 @@ def app():
     st.dataframe(df)
 
 
-def read_files(datadir: str = "data") -> pd.DataFrame:
+def read_files() -> pd.DataFrame:
     """Ingest History CSV File"""
-    df = pd.read_csv(f"{datadir}/history.csv")
+    df = download_file_from_blob()
     # Convert 'Date-Time' column to datetime
     df["Date-Time"] = pd.to_datetime(df["Date-Time"], format="%Y-%m-%d %H:%M:%S")
     df["Date"] = df["Date-Time"].dt.date
     df = df.sort_values(by="Date-Time", ascending=False).reset_index(drop=True)
     return df
-
-
-def load_target() -> int:
-    with open(TARGET_FILE, "r") as file:
-        return json.load(file).get("daily_milk_target")
-
-
-def load_dob() -> str:
-    with open(DOB_FILE, "r") as file:
-        return json.load(file).get("date_of_birth")
 
 
 def generate_bday_message(dob: str) -> str:
