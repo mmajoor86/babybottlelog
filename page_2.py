@@ -22,7 +22,7 @@ def app():
     st.write(bday_message)
 
     weather_messages = generate_weather_message()
-    st.write("**Het weer in Utrecht:")
+    st.write("**Het weer in Utrecht:**")
     if len(weather_messages) > 1:
         st.write(weather_messages[0])
         st.write(weather_messages[1])
