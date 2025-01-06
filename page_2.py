@@ -1,4 +1,5 @@
 import json
+import requests
 from datetime import datetime, timedelta
 
 import numpy as np
@@ -15,10 +16,21 @@ def app():
     st.markdown("### 📊 Jessie Analytics 🌸👶")
     df = read_files()
 
+    st.subheader("What's happening today?")
     dob = load_dob()
     bday_message = generate_bday_message(dob)
     st.write(bday_message)
+
+    weather_message = generate_weather_message()
+    st.write("Het weer in Utrecht:")
+    if weather_message[0]: 
+        st.write(weather_message[0])
+        st.image(r"images/"+(f"{weather_message[1]}")+".png")
+    else:
+        st.write(weather_message)
+
     # Date range filter
+    st.subheader("Select date range for analytics:")
     timezone = pytz.timezone("Europe/Amsterdam")
     start_date = st.date_input(
         "Start date", datetime.now(timezone).date() - timedelta(days=7)
@@ -98,6 +110,25 @@ def load_dob() -> str:
     with open(DOB_FILE, "r") as file:
         return json.load(file).get("date_of_birth")
 
+def generate_weather_message():
+    with st.spinner("Retrieving weather data..."):
+        ### prepare API key and URL
+        api_key = st.secrets["api_key"]
+        api_url = f"http://weerlive.nl/api/weerlive_api_v2.php?key=3f76c74abe&locatie=Utrecht"
+
+        ### invoke API and get the response
+        response = requests.get(url=api_url, headers={"X-Api-Key": api_key})
+        if response.status_code == requests.codes.ok:
+            ### Convert data to JSON format and construct weather message
+            data = json.loads(json.dumps(response.json()))
+            #st.image(r"images/"+(f"{data['liveweer'][0]['image']}")+".png")
+            message = []
+            message.append(f"🌡️Temperatuur: {data['liveweer'][0]['temp']}, {data['liveweer'][0]['samenv']}. {data['liveweer'][0]['lkop']}.")
+            message.append(f"{data['liveweer'][0]['image']}")
+            print(message)
+        else:
+            message = "Er is helaas iets misgegaan met het ophalen van weer data 😒"
+    return message
 
 def generate_bday_message(dob: str) -> str:
     timezone = pytz.timezone("Europe/Amsterdam")
