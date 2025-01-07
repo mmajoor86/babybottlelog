@@ -5,6 +5,7 @@ import pandas as pd
 import pytz
 import streamlit as st
 
+from utils import upload_dataframe_to_blob
 
 def app():
     st.markdown("### Log feedings and diaper changes for baby Jessie! 🌸👶")
@@ -76,5 +77,5 @@ def store_data_csv(
     df = pd.concat([df_hist, pd.DataFrame(data)]).sort_values(
         by="Date-Time", ascending=False
     )
-    df.to_csv("data/history.csv", index=False)
+    upload_dataframe_to_blob(df)
     return df

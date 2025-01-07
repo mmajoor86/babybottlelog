@@ -8,8 +8,7 @@ import requests
 import streamlit as st
 from dateutil import relativedelta
 
-from constants import DOB_FILE, RECOMMENDATION_FILE, TARGET_FILE
-
+from utils import load_dob, load_recommended_amount_ml_per_kg, load_target, download_file_from_blob
 
 def app():
     st.markdown("### 📊 Jessie Analytics 🌸👶")
@@ -102,29 +101,14 @@ def calculate_daily_target(df_filtered):
     return daily_target
 
 
-def read_files(datadir: str = "data") -> pd.DataFrame:
+def read_files() -> pd.DataFrame:
     """Ingest History CSV File"""
-    df = pd.read_csv(f"{datadir}/history.csv")
+    df = download_file_from_blob()
     # Convert 'Date-Time' column to datetime
     df["Date-Time"] = pd.to_datetime(df["Date-Time"], format="%Y-%m-%d %H:%M:%S")
     df["Date"] = df["Date-Time"].dt.date
     df = df.sort_values(by="Date-Time", ascending=False).reset_index(drop=True)
     return df
-
-
-def load_target() -> int:
-    with open(TARGET_FILE, "r") as file:
-        return json.load(file).get("daily_milk_target")
-
-
-def load_recommended_amount_ml_per_kg() -> int:
-    with open(RECOMMENDATION_FILE, "r") as file:
-        return json.load(file).get("recommended_amount_ml_per_kg")
-
-
-def load_dob() -> str:
-    with open(DOB_FILE, "r") as file:
-        return json.load(file).get("date_of_birth")
 
 
 def generate_weather_message():

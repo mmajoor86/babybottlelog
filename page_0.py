@@ -4,7 +4,7 @@ import pandas as pd
 import streamlit as st
 
 from constants import RECOMMENDATION_FILE, TARGET_FILE
-from page_2 import load_recommended_amount_ml_per_kg, load_target
+from utils import load_recommended_amount_ml_per_kg, load_target
 
 
 def save_target(target):
