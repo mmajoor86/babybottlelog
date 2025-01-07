@@ -1,7 +1,6 @@
 import json
 from datetime import datetime, timedelta
 
-import numpy as np
 import pandas as pd
 import plotly.express as px
 import pytz
@@ -45,15 +44,14 @@ def app():
     if start_date > end_date:
         st.error("Error: End date must fall after start date.")
         return
-    # Filter data based on the selected date range
-    mask = (df["Date"] >= start_date) & (df["Date"] <= end_date)
-    df_filtered = df.loc[mask]
 
+    # Filter data based on the selected date range
     daily_target = calculate_daily_target(df)
 
     st.subheader("Most recent activities")
     last_events = (
-        df_filtered.sort_values(by="Date-Time")
+        df.sort_values(by="Date-Time")
+        .query("Activity in ['💩 Poopy Diaper','👶 Diaper','🍼 Drink']")
         .groupby("Activity")
         .tail(1)
         .drop("Date", axis=1)
@@ -63,14 +61,14 @@ def app():
     st.subheader("🍼 Activity Over Time")
     # Generate Plots
     fig_weight, fig_length, fig_activity, fig_amount = create_daily_plots(
-        df_filtered, daily_target
+        df, daily_target, start_date, end_date
     )
     st.plotly_chart(fig_activity)
     st.plotly_chart(fig_amount)
     st.plotly_chart(fig_weight)
     st.plotly_chart(fig_length)
     st.write("### Raw Data 📋")
-    st.dataframe(df)
+    st.dataframe(df.drop("Date", axis=1))
 
 
 # Calculate daily_target
@@ -186,8 +184,10 @@ def generate_bday_message(dob: str) -> str:
     return message
 
 
-def create_daily_plots(df_filtered: pd.DataFrame, daily_target: int):
+def create_daily_plots(df: pd.DataFrame, daily_target: int, start_date, end_date):
     """Generate daily plots for activity counts and consumption"""
+    mask = (df["Date"] >= start_date) & (df["Date"] <= end_date)
+    df_filtered = df.loc[mask]
 
     # DF without weight and length
     df_activities = df_filtered[
@@ -195,10 +195,10 @@ def create_daily_plots(df_filtered: pd.DataFrame, daily_target: int):
     ]
 
     # DF weight
-    df_weight = df_filtered[df_filtered["Activity"].isin(["⚖️ Weight"])]
+    df_weight = df[df["Activity"].isin(["⚖️ Weight"])]
 
     # DF length
-    df_length = df_filtered[df_filtered["Activity"].isin(["📏 Length"])]
+    df_length = df[df["Activity"].isin(["📏 Length"])]
 
     activity_count = (
         df_activities.groupby(["Date", "Activity"]).size().reset_index(name="Count")
