@@ -8,7 +8,7 @@ from azure.storage.blob import BlobServiceClient
 from constants import DOB_FILE, RECOMMENDATION_FILE, TARGET_FILE
 
 
-def download_file_from_blob(, blob_name="history.csv"):
+def download_file_from_blob(blob_name="history.csv"):
     blob_service_client = BlobServiceClient.from_connection_string(
         st.secrets["connection_string"]
     )
