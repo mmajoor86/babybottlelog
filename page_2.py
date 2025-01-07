@@ -49,7 +49,7 @@ def app():
     mask = (df["Date"] >= start_date) & (df["Date"] <= end_date)
     df_filtered = df.loc[mask]
 
-    daily_target = calculate_daily_target(df_filtered)
+    daily_target = calculate_daily_target(df)
 
     st.subheader("Most recent activities")
     last_events = (
@@ -80,13 +80,14 @@ def calculate_daily_target(df_filtered):
         .sort_values(by="Date-Time", ascending=False)
         .reset_index(drop=True)
     ).dropna(subset="Weight")
-    last_weight = df_weight["Weight"][0]
-    recommended_amount_ml_per_kg = load_recommended_amount_ml_per_kg()
-    if (
-        last_weight != 0 and last_weight is not np.nan
-    ) and recommended_amount_ml_per_kg != 0:
-        daily_target = last_weight * recommended_amount_ml_per_kg
-    else:
+    try :
+        last_weight = df_weight["Weight"][0]
+        recommended_amount_ml_per_kg = load_recommended_amount_ml_per_kg()
+        if last_weight != 0 and recommended_amount_ml_per_kg != 0:
+            daily_target = last_weight * recommended_amount_ml_per_kg
+        else:
+            daily_target = load_target()
+    except:
         daily_target = load_target()
     return daily_target
 
