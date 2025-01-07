@@ -75,20 +75,32 @@ def app():
 
 # Calculate daily_target
 def calculate_daily_target(df_filtered):
+    # Filter for weight activity and sort by date-time in descending order
     df_weight = (
         df_filtered[df_filtered["Activity"] == "⚖️ Weight"]
         .sort_values(by="Date-Time", ascending=False)
         .reset_index(drop=True)
-    ).dropna(subset="Weight")
-    try :
-        last_weight = df_weight["Weight"][0]
+        .dropna(subset=["Weight"])
+    )
+
+    try:
+        # Retrieve the last recorded weight
+        last_weight = df_weight["Weight"].iloc[0]
         recommended_amount_ml_per_kg = load_recommended_amount_ml_per_kg()
+
+        # Calculate daily target based on last weight and recommended amount
         if last_weight != 0 and recommended_amount_ml_per_kg != 0:
             daily_target = last_weight * recommended_amount_ml_per_kg
         else:
             daily_target = load_target()
-    except:
+    except IndexError:
+        # Handle case where no weight records are found
         daily_target = load_target()
+    except Exception as e:
+        # Catch any other exceptions and log the error
+        print(f"An error occurred: {e}")
+        daily_target = load_target()
+
     return daily_target
 
 
