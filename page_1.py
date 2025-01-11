@@ -1,9 +1,10 @@
 from datetime import datetime
 
 import numpy as np
-import pandas as pd
 import pytz
 import streamlit as st
+
+from utils import store_df_to_blob
 
 
 def app():
@@ -54,27 +55,5 @@ def app():
         )
         st.write(f"Weight: {weight} kg" if weight > 0 else "Weight: N/A")
         st.write(f"Length: {length} cm" if length > 0 else "Length: N/A")
-        store_data_csv(date_time, activity, amount, weight, length)
+        store_df_to_blob(date_time, activity, amount, weight, length)
         st.markdown("### Updated Data 📊")
-
-
-def store_data_csv(
-    date_time: datetime, activity: str, amount: int, weight: float, length: int
-) -> pd.DataFrame:
-    """Append the data to the history csv file."""
-    df_hist = pd.read_csv("data/history.csv")
-    df_hist["Date-Time"] = pd.to_datetime(
-        df_hist["Date-Time"], format="%Y-%m-%d %H:%M:%S"
-    )
-    data = {
-        "Date-Time": [date_time],
-        "Activity": [activity],
-        "Amount Consumed": [amount if amount > 0 else None],
-        "Weight": [weight if weight > 0 else None],
-        "Length": [length if length > 0 else None],
-    }
-    df = pd.concat([df_hist, pd.DataFrame(data)]).sort_values(
-        by="Date-Time", ascending=False
-    )
-    df.to_csv("data/history.csv", index=False)
-    return df

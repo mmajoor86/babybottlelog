@@ -1,10 +1,10 @@
 import json
 
-import pandas as pd
 import streamlit as st
 
 from constants import RECOMMENDATION_FILE, TARGET_FILE
-from page_2 import load_recommended_amount_ml_per_kg, load_target
+from utils import (load_recommended_amount_ml_per_kg, load_target,
+                   read_files_from_blob, upload_dataframe_to_blob)
 
 
 def save_target(target):
@@ -59,16 +59,13 @@ def app():
     st.write(
         f"Current recommended amount of milk per kg: {recommended_amount_per_kg} ml"
     )
-
-    # Path to the data file
-    data_file = "data/history.csv"
     # Load the data
-    df = pd.read_csv(data_file)
+    df = read_files_from_blob()
 
     # Display the data editor s
     st.markdown("### Data Editor")
     edited_df = st.data_editor(df, num_rows="dynamic")
     # Save button
     if st.button("Save Changes"):
-        edited_df.to_csv(data_file, index=False)
+        upload_dataframe_to_blob(edited_df, blob_name="history.csv")
         st.success("Changes saved successfully!")
