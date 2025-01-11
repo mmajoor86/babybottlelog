@@ -8,11 +8,13 @@ import requests
 import streamlit as st
 from dateutil import relativedelta
 
-from utils import load_dob, load_recommended_amount_ml_per_kg, load_target, download_file_from_blob
+from utils import (load_dob, load_recommended_amount_ml_per_kg, load_target,
+                   read_files_from_blob)
+
 
 def app():
     st.markdown("### 📊 Jessie Analytics 🌸👶")
-    df = read_files()
+    df = read_files_from_blob()
 
     st.subheader("What's happening today?")
     dob = load_dob()
@@ -99,16 +101,6 @@ def calculate_daily_target(df_filtered):
         daily_target = load_target()
 
     return daily_target
-
-
-def read_files() -> pd.DataFrame:
-    """Ingest History CSV File"""
-    df = download_file_from_blob()
-    # Convert 'Date-Time' column to datetime
-    df["Date-Time"] = pd.to_datetime(df["Date-Time"], format="%Y-%m-%d %H:%M:%S")
-    df["Date"] = df["Date-Time"].dt.date
-    df = df.sort_values(by="Date-Time", ascending=False).reset_index(drop=True)
-    return df
 
 
 def generate_weather_message():
