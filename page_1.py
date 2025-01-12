@@ -48,9 +48,9 @@ def app():
     if st.button("Submit"):
         numbers = [i for i in [amount, weight, length] if ~np.isnan(i)]
         if len(numbers) > 0:
-            st.write(f"#### Recorded {activity} of {numbers[0]} on {date_time}")
+            st.write(f"#### Recorded: {activity} of {numbers[0]} on {date_time}")
         else:
-            st.write(f"#### Recorded {activity} on {date_time}")
+            st.write(f"#### Recorded: {activity} on {date_time}")
 
         store_df_to_blob(date_time, activity, amount, weight, length)
         st.markdown("#### Data uploaded to Azure successfully 📊")
