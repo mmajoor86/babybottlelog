@@ -8,8 +8,12 @@ import requests
 import streamlit as st
 from dateutil import relativedelta
 
-from utils import (load_dob, load_recommended_amount_ml_per_kg, load_target,
-                   read_files_from_blob)
+from utils import (
+    load_dob,
+    load_recommended_amount_ml_per_kg,
+    load_target,
+    read_files_from_blob,
+)
 
 
 def app():
