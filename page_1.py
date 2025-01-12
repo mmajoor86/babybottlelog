@@ -21,7 +21,7 @@ def app():
     date_time = datetime.combine(date, time)
 
     # Record Activity
-    activity = st.selectbox("Activity", ACTIVITIES)
+    activity = activity = st.selectbox("Activity", options=ACTIVITIES)
     amount = np.nan
     weight = np.nan
     length = np.nan
