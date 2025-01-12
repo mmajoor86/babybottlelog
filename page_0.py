@@ -68,4 +68,4 @@ def app():
     # Save button
     if st.button("Save Changes"):
         upload_dataframe_to_blob(edited_df, blob_name="history.csv")
-        st.success("Changes saved successfully!")
+        st.success("#### Changes uploaded to Azure successfully 📊")

@@ -35,7 +35,7 @@ def app():
         st.write(weather_messages[0])
 
     # Date range filter
-    st.subheader("Select date range for analytics:")
+    st.subheader("Filter date range for analytics:")
     timezone = pytz.timezone("Europe/Amsterdam")
     start_date = st.date_input(
         "Start date", datetime.now(timezone).date() - timedelta(days=7)
@@ -145,18 +145,18 @@ def generate_bday_message(dob: str) -> str:
     year_cond = dob.month == today.month and dob.day == today.day
     calmonth_cond = dob.day == today.day
     if year_cond:
-        message = f"🎂HURRAY🎂 Jessie is {today.year-dob.year} year old today 🎁🎁"
+        message = f"🎂HURRAY🎂 Jessie is **{today.year-dob.year} years old** today 🎁🎁"
     elif calmonth_cond:
         months_difference = (r.years * 12) + r.months
         message = (
-            f"🎈HURRAY🎈 Jessie is {months_difference} calender months old today 🎉"
+            f"🎈HURRAY🎈 Jessie is **{months_difference} calender months old** today 🎉"
         )
     elif ndays % 28 == 0:
-        message = f"🎈HURRAY🎈 Jessie is {ndays/28} months old today 🎉"
+        message = f"🎈HURRAY🎈 Jessie is **{ndays/28} months old** today 🎉"
     elif ndays % 7 == 0:
-        message = f"🎈HURRAY🎈 Jessie is {ndays/7} weeks old today 🥳"
+        message = f"🎈HURRAY🎈 Jessie is **{ndays/7} weeks old **today 🥳"
     else:
-        message = f"🎈HURRAY🎈 Jessie is {ndays} days old today"
+        message = f"🎈HURRAY🎈 Jessie is **{ndays} days old** today"
     return message
 
 
