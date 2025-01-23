@@ -4,6 +4,7 @@ import numpy as np
 import pytz
 import streamlit as st
 
+from constants import ACTIVITIES
 from utils import store_df_to_blob
 
 
@@ -20,10 +21,7 @@ def app():
     date_time = datetime.combine(date, time)
 
     # Record Activity
-    activity = st.selectbox(
-        "Activity",
-        ["🍼 Drink", "👶 Diaper", "💩 Poopy Diaper", "⚖️ Weight", "📏 Length"],
-    )
+    activity = activity = st.selectbox("Activity", options=ACTIVITIES)
     amount = np.nan
     weight = np.nan
     length = np.nan
@@ -48,12 +46,11 @@ def app():
 
     # Submit button
     if st.button("Submit"):
-        st.write(f"Date-Time: {date_time}")
-        st.write(f"Activity: {activity}")
-        st.write(
-            f"Amount Consumed: {amount} ml" if amount > 0 else "Amount Consumed: N/A"
-        )
-        st.write(f"Weight: {weight} kg" if weight > 0 else "Weight: N/A")
-        st.write(f"Length: {length} cm" if length > 0 else "Length: N/A")
+        numbers = [i for i in [amount, weight, length] if ~np.isnan(i)]
+        if len(numbers) > 0:
+            st.write(f"#### Recorded: {activity} of {numbers[0]} on {date_time}")
+        else:
+            st.write(f"#### Recorded: {activity} on {date_time}")
+
         store_df_to_blob(date_time, activity, amount, weight, length)
-        st.markdown("### Updated Data 📊")
+        st.markdown("#### Data uploaded to Azure successfully 📊")
