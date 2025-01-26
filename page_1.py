@@ -9,8 +9,6 @@ from utils import store_df_to_blob
 
 
 def app():
-    st.markdown("### Log feedings and diaper changes for baby Jessie! 🌸👶")
-
     # Define the timezone for Amsterdam
     timezone = pytz.timezone("Europe/Amsterdam")
     # Get the current date and time in the Amsterdam timezone and remove microseconds
