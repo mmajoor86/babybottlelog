@@ -35,7 +35,7 @@ if not check_password():
     st.stop()  # Do not continue if check_password is not True.
 
 # Sidebar with options to navigate between pages
-st.title("🍼 Baby Jessie’s Bottle Logger")
+st.title("🍼 Jessie’s Activity Logger")
 st.sidebar.title("🚀 Navigation")
 selection = st.sidebar.radio(
     label="Select Page",
