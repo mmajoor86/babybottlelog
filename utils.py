@@ -77,3 +77,8 @@ def load_recommended_amount_ml_per_kg() -> int:
 def load_dob() -> str:
     with open(DOB_FILE, "r") as file:
         return json.load(file).get("date_of_birth")
+
+
+def save_target_recommended_amount(target):
+    with open(RECOMMENDATION_FILE, "w") as file:
+        json.dump({"recommended_amount_ml_per_kg": target}, file)
