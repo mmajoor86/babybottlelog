@@ -59,7 +59,7 @@ def app():
         .query("Activity in ['💩 Poopy Diaper','👶 Diaper','🍼 Drink', '💊 Vitamin D']")
         .groupby("Activity")
         .tail(1)
-        .drop("Date", axis=1)
+        .drop(["Date", "Weight", "Length"], axis=1)
     )
     st.dataframe(last_events)
 
