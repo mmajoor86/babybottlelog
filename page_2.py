@@ -8,8 +8,12 @@ import requests
 import streamlit as st
 from dateutil import relativedelta
 
-from utils import (load_dob, load_recommended_amount_ml_per_kg, load_target,
-                   read_files_from_blob)
+from utils import (
+    load_dob,
+    load_recommended_amount_ml_per_kg,
+    load_target,
+    read_files_from_blob,
+)
 
 
 def app():
@@ -52,7 +56,7 @@ def app():
     st.subheader("Most recent activities")
     last_events = (
         df.sort_values(by="Date-Time")
-        .query("Activity in ['💩 Poopy Diaper','👶 Diaper','🍼 Drink']")
+        .query("Activity in ['💩 Poopy Diaper','👶 Diaper','🍼 Drink', '💊 Vitamin D']")
         .groupby("Activity")
         .tail(1)
         .drop("Date", axis=1)
