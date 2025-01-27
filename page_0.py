@@ -2,14 +2,12 @@ import json
 
 import streamlit as st
 
-from constants import RECOMMENDATION_FILE, TARGET_FILE
-from utils import (load_recommended_amount_ml_per_kg, load_target,
-                   read_files_from_blob, upload_dataframe_to_blob)
-
-
-def save_target(target):
-    with open(TARGET_FILE, "w") as file:
-        json.dump({"daily_milk_target": target}, file)
+from constants import RECOMMENDATION_FILE
+from utils import (
+    load_recommended_amount_ml_per_kg,
+    read_files_from_blob,
+    upload_dataframe_to_blob,
+)
 
 
 def save_target_recommended_amount(target):
@@ -20,24 +18,8 @@ def save_target_recommended_amount(target):
 def app():
     st.markdown("### 🚀 Admin Centre")
 
-    # Load the current target
-    current_target = load_target()
-
     # Load recommended amount ml per kg
     recommended_amount_ml_per_kg = load_recommended_amount_ml_per_kg()
-
-    # Input for Daily Milk Target
-    daily_target = st.number_input(
-        label="Daily Milk Target (ml)", min_value=600, step=50, value=current_target
-    )
-
-    # Button to confirm the change
-    if st.button("Set Daily Target"):
-        save_target(daily_target)
-        st.success(f"Daily Milk Target set to: {daily_target} ml")
-        st.rerun()  # Reload
-    # Display the current target
-    st.write(f"Current Daily Milk Target: {daily_target} ml")
 
     # Input for recommended amount of milk in ml per kg
     recommended_amount_per_kg = st.number_input(

@@ -8,15 +8,19 @@ import requests
 import streamlit as st
 from dateutil import relativedelta
 
-from utils import (load_dob, load_recommended_amount_ml_per_kg, load_target,
-                   read_files_from_blob)
+from utils import (
+    load_dob,
+    load_recommended_amount_ml_per_kg,
+    load_target,
+    read_files_from_blob,
+)
 
 
 def app():
-    st.markdown("### 📊 Jessie Analytics 🌸👶")
+    st.subheader("What's happening today? 🌸👶")
+
     df = read_files_from_blob()
 
-    st.subheader("What's happening today?")
     dob = load_dob()
     bday_message = generate_bday_message(dob)
     st.write(bday_message)
@@ -52,10 +56,10 @@ def app():
     st.subheader("Most recent activities")
     last_events = (
         df.sort_values(by="Date-Time")
-        .query("Activity in ['💩 Poopy Diaper','👶 Diaper','🍼 Drink']")
+        .query("Activity in ['💩 Poopy Diaper','👶 Diaper','🍼 Drink', '💊 Vitamin D']")
         .groupby("Activity")
         .tail(1)
-        .drop("Date", axis=1)
+        .drop(["Date", "Weight", "Length"], axis=1)
     )
     st.dataframe(last_events)
 
@@ -204,17 +208,26 @@ def create_daily_plots(df: pd.DataFrame, daily_target: int, start_date, end_date
 
     fig_length.update_layout(xaxis_tickformat="%Y-%m-%d")
 
+    color_map = {
+        "💩 Poopy Diaper": "#8B4513",
+    }
+
     fig_activity = px.line(
         activity_count,
         x="Date",
         y="Count",
         color="Activity",
+        color_discrete_map=color_map,
         markers=True,
         title="Activity Count Over Time",
         labels={"Date": "Date", "Count": "Activity Count"},
+        template="plotly_white",
     )
 
+    # Setting y-axis to start at 0
+    fig_activity.update_yaxes(range=[0, activity_count["Count"].max()])
     fig_activity.update_layout(xaxis_tickformat="%Y-%m-%d")
+
     amount_consumed = (
         df_activities.groupby("Date")["Amount Consumed"].sum().reset_index()
     )
