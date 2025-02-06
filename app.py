@@ -7,7 +7,7 @@ import page_1
 import page_2
 
 
-def check_password():
+def check_password()->bool:
     """Returns `True` if the user had the correct password."""
 
     def password_entered():
@@ -35,7 +35,7 @@ if not check_password():
     st.stop()  # Do not continue if check_password is not True.
 
 # Sidebar with options to navigate between pages
-st.title("🍼 Jessie’s Activity Logger")
+st.title("🍼 Jessie’s App")
 st.sidebar.title("🚀 Navigation")
 selection = st.sidebar.radio(
     label="Select Page",

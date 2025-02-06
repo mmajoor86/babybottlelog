@@ -2,17 +2,12 @@ import json
 
 import streamlit as st
 
-from constants import RECOMMENDATION_FILE
 from utils import (
     load_recommended_amount_ml_per_kg,
     read_files_from_blob,
     upload_dataframe_to_blob,
+    save_target_recommended_amount,
 )
-
-
-def save_target_recommended_amount(target):
-    with open(RECOMMENDATION_FILE, "w") as file:
-        json.dump({"recommended_amount_ml_per_kg": target}, file)
 
 
 def app():

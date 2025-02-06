@@ -17,7 +17,7 @@ from utils import (
 
 
 def app():
-    st.subheader("What's happening today? 🌸👶")
+    st.subheader("What's happening today? 👶")
 
     df = read_files_from_blob()
 
@@ -76,8 +76,8 @@ def app():
     st.dataframe(df.drop("Date", axis=1))
 
 
-# Calculate daily_target
 def calculate_daily_target(df_filtered):
+    """"""
     # Filter for weight activity and sort by date-time in descending order
     df_weight = (
         df_filtered[df_filtered["Activity"] == "⚖️ Weight"]
@@ -87,11 +87,8 @@ def calculate_daily_target(df_filtered):
     )
 
     try:
-        # Retrieve the last recorded weight
         last_weight = df_weight["Weight"].iloc[0]
         recommended_amount_ml_per_kg = load_recommended_amount_ml_per_kg()
-
-        # Calculate daily target based on last weight and recommended amount
         if last_weight != 0 and recommended_amount_ml_per_kg != 0:
             daily_target = last_weight * recommended_amount_ml_per_kg
         else:
@@ -109,13 +106,10 @@ def calculate_daily_target(df_filtered):
 
 def generate_weather_message():
     with st.spinner("Retrieving weather data..."):
-        ### prepare API key and URL
         api_key = st.secrets["api_key"]
         api_url = (
             "http://weerlive.nl/api/weerlive_api_v2.php?key=3f76c74abe&locatie=Utrecht"
         )
-
-        ### invoke API and get the response
         response = requests.get(url=api_url, headers={"X-Api-Key": api_key})
         if response.status_code == requests.codes.ok:
             ### Convert data to JSON format and construct weather message
@@ -139,13 +133,12 @@ def generate_weather_message():
 
 
 def generate_bday_message(dob: str) -> str:
+    """Generates a birthday message if a full year, month, week or day has passed."""
     timezone = pytz.timezone("Europe/Amsterdam")
     dob = pd.to_datetime(dob, format="%d-%m-%Y").date()
     today = datetime.now(timezone).date()
     r = relativedelta.relativedelta(today, dob)
     ndays = (today - dob).days
-
-    # check if X full years have passed
     year_cond = dob.month == today.month and dob.day == today.day
     calmonth_cond = dob.day == today.day
     if year_cond:
@@ -165,24 +158,19 @@ def generate_bday_message(dob: str) -> str:
 
 
 def create_daily_plots(df: pd.DataFrame, daily_target: int, start_date, end_date):
-    """Generate daily plots for activity counts and consumption"""
+    """Generates plots for activity counts and milk consumption."""
     mask = (df["Date"] >= start_date) & (df["Date"] <= end_date)
     df_filtered = df.loc[mask]
 
-    # DF without weight and length
+    # Prep DataFrames
     df_activities = df_filtered[
         ~df_filtered["Activity"].isin(["⚖️ Weight", "📏 Length"])
     ]
-
-    # DF weight
-    df_weight = df[df["Activity"].isin(["⚖️ Weight"])]
-
-    # DF length
-    df_length = df[df["Activity"].isin(["📏 Length"])]
-
     activity_count = (
         df_activities.groupby(["Date", "Activity"]).size().reset_index(name="Count")
     )
+    df_weight = df[df["Activity"].isin(["⚖️ Weight"])]
+    df_length = df[df["Activity"].isin(["📏 Length"])]
 
     fig_weight = px.line(
         df_weight.dropna(subset="Weight"),
@@ -224,7 +212,6 @@ def create_daily_plots(df: pd.DataFrame, daily_target: int, start_date, end_date
         template="plotly_white",
     )
 
-    # Setting y-axis to start at 0
     fig_activity.update_yaxes(range=[0, activity_count["Count"].max()])
     fig_activity.update_layout(xaxis_tickformat="%Y-%m-%d")
 
