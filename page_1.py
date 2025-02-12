@@ -6,7 +6,7 @@ import streamlit as st
 
 from constants import ACTIVITIES
 from utils import store_df_to_blob
-
+from streamlit_extras.let_it_rain import rain
 
 def app():
     # Define the timezone for Amsterdam
@@ -33,6 +33,10 @@ def app():
             format="%d",
             value=0,
         )
+        if amount == 180:
+            rain = True
+        else:
+            rain = False
 
     # Record Weight (optional)
     if activity == "⚖️ Weight":
@@ -51,5 +55,15 @@ def app():
             st.success(
                 f"#### Recorded: {activity} of {numbers[0]} on {date_time} to Azure 📊"
             )
+            if rain == True:
+                rain_darts()
         else:
             st.success(f"#### Recorded: {activity} on {date_time} to Azure 📊")
+
+def rain_darts():
+    rain(
+        emoji="🎯",
+        font_size=54,
+        falling_speed=5,
+        animation_length="infinite",
+    )
