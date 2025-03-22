@@ -28,7 +28,7 @@ def app():
         amount = st.number_input(
             "Amount Consumed (ml)",
             min_value=0,
-            max_value=200,
+            max_value=400,
             step=10,
             format="%d",
             value=0,
