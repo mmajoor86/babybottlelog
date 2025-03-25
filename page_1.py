@@ -8,6 +8,7 @@ from constants import ACTIVITIES
 from utils import store_df_to_blob
 from streamlit_extras.let_it_rain import rain
 
+
 def app():
     # Define the timezone for Amsterdam
     timezone = pytz.timezone("Europe/Amsterdam")
@@ -20,9 +21,7 @@ def app():
 
     # Record Activity
     activity = activity = st.selectbox("Activity", options=ACTIVITIES)
-    amount = np.nan
-    weight = np.nan
-    length = np.nan
+    amount = weight = length = nap_time = np.nan
     # Record Amount (optional)
     if activity == "🍼 Drink":
         amount = st.number_input(
@@ -38,27 +37,31 @@ def app():
         else:
             rain = False
 
-    # Record Weight (optional)
+    # Record Weight, Length and Naptime
     if activity == "⚖️ Weight":
         weight = st.number_input("Weight (kg)", step=0.1, format="%.2f")
 
-    # Record Length (optional)
     if activity == "📏 Length":
         length = st.number_input("Length (cm)", step=0.1, format="%.2f")
+
+    if activity == "😴 Nap":
+        nap_end = datetime.combine(date, st.time_input("Nap End", value="now"))
+        nap_time = (nap_end - date_time).total_seconds() / 60
 
     # Submit button
     if st.button("Submit"):
         numbers = [i for i in [amount, weight, length] if ~np.isnan(i)]
-        store_df_to_blob(date_time, activity, amount, weight, length)
+        store_df_to_blob(date_time, activity, amount, weight, length, nap_time)
 
         if len(numbers) > 0:
             st.success(
                 f"#### Recorded: {activity} of {numbers[0]} on {date_time} to Azure 📊"
             )
-            if rain == True:
+            if rain:
                 rain_darts()
         else:
             st.success(f"#### Recorded: {activity} on {date_time} to Azure 📊")
+
 
 def rain_darts():
     rain(

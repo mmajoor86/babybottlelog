@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from io import StringIO
 
 import pandas as pd
@@ -43,7 +43,12 @@ def upload_dataframe_to_blob(df, blob_name="history.csv"):
 
 
 def store_df_to_blob(
-    date_time: datetime, activity: str, amount: int, weight: float, length: int
+    date_time: datetime,
+    activity: str,
+    amount: int,
+    weight: float,
+    length: int,
+    nap_time: timedelta,
 ) -> pd.DataFrame:
     """Append the data to the history csv file."""
     df_hist = read_files_from_blob()
@@ -54,6 +59,7 @@ def store_df_to_blob(
         "Date-Time": [date_time],
         "Activity": [activity],
         "Amount Consumed": [amount if amount > 0 else None],
+        "Nap Time": [nap_time if nap_time else None],
         "Weight": [weight if weight > 0 else None],
         "Length": [length if length > 0 else None],
     }

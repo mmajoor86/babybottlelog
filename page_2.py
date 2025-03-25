@@ -56,7 +56,9 @@ def app():
     st.subheader("Most recent activities")
     last_events = (
         df.sort_values(by="Date-Time")
-        .query("Activity in ['💩 Poopy Diaper','👶 Diaper','🍼 Drink', '💊 Vitamin D']")
+        .query(
+            "Activity in ['💩 Poopy Diaper','👶 Diaper','🍼 Drink', '💊 Vitamin D', '😴 Nap']"
+        )
         .groupby("Activity")
         .tail(1)
         .drop(["Date", "Weight", "Length"], axis=1)
