@@ -6,6 +6,7 @@ ACTIVITIES = [
     "👶 Diaper",
     "💩 Poopy Diaper",
     "💊 Vitamin D",
+    "😴 Nap",
     "⚖️ Weight",
     "📏 Length",
 ]
