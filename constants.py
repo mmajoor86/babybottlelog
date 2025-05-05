@@ -3,6 +3,8 @@ RECOMMENDATION_FILE = r"data/recommended_amount.json"
 DOB_FILE = r"data/dob.json"
 ACTIVITIES = [
     "🍼 Drink",
+    "🥣 Porridge",
+    "🍯 Olvarit",
     "👶 Diaper",
     "💩 Poopy Diaper",
     "💊 Vitamin D",

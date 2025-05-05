@@ -8,10 +8,16 @@ from constants import ACTIVITIES
 from utils import store_df_to_blob
 from streamlit_extras.let_it_rain import rain
 
+
 def app():
     # Define the timezone for Amsterdam
     timezone = pytz.timezone("Europe/Amsterdam")
     # Get the current date and time in the Amsterdam timezone and remove microseconds
+    if "current_time_amsterdam" not in st.session_state:
+        st.session_state["current_time_amsterdam"] = datetime.now(
+            timezone
+        ).replace(microsecond=0)
+
     current_time_amsterdam = datetime.now(timezone).replace(microsecond=0)
     # Record Date and Time
     date = st.date_input("📅 Date", current_time_amsterdam.date())
@@ -24,7 +30,7 @@ def app():
     weight = np.nan
     length = np.nan
     # Record Amount (optional)
-    if activity == "🍼 Drink":
+    if activity in ["🍼 Drink", "🥣 Porridge", "🍯 Olvarit"]:
         amount = st.number_input(
             "Amount Consumed (ml)",
             min_value=0,
@@ -55,10 +61,11 @@ def app():
             st.success(
                 f"#### Recorded: {activity} of {numbers[0]} on {date_time} to Azure 📊"
             )
-            if rain == True:
+            if rain is True:
                 rain_darts()
         else:
             st.success(f"#### Recorded: {activity} on {date_time} to Azure 📊")
+
 
 def rain_darts():
     rain(
